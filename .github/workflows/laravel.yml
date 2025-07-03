@@ -33,6 +33,15 @@ jobs:
           extensions: mbstring, bcmath, pdo, pdo_mysql, dom, curl
           coverage: none
 
+      - name: Copy .env
+        run: cp .env.example .env
+
+      - name: Install Composer dependencies
+        run: composer install --prefer-dist --no-progress --no-suggest
+
+      - name: Generate Laravel key
+        run: php artisan key:generate
+
       - name: Run migrations
         env:
           DB_CONNECTION: mysql
