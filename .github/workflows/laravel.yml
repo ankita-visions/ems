@@ -1,0 +1,26 @@
+name: Laravel CI/CD
+on:
+  push:
+    branches: [ "main" ]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: ssh deploy
+      uses: easingthemes/ssh-deploy@main
+    - name: Install Composer dependencies
+      run: composer install --prefer-dist --no-progress --no-suggest --optimize-autoloader
+    - name: Run Tests
+      run: php artisan test      
+      env:
+        SSH_PRIVATE_KEY: ${{ secrets.SSH_DEPLOY_KEY }} 
+        REMOTE_HOST: ${{ secrets.HOST_DEV }}
+        REMOTE_USER: ${{ secrets.USER }}
+        TARGET: ${{ secrets.REMOTE_PATH_LIVE }}\\
+      with:
+        php-version: '8.2'
+        host: ${{ secrets.HOST_DEV }}
+        username: ${{ secrets.USER }}
+        key: ${{ secrets.SSH_DEPLOY_KEY }}
+        script: "cd /var/www/html/ems/ems && php artisan migrate"
